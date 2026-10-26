@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CampusCash — Overview</title>
+<script>try{var t=localStorage.getItem("cc-theme");if(t!="light"&&t!="dark")t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#e8f2e9;--ink:#10231a;--mu:#55675c;--ac:#1f7a4d;--bt:#fff;--lime:#b9ec5b;--co:#e5624b;--gl:rgba(255,255,255,.5);--gb:rgba(255,255,255,.78);--fi:rgba(255,255,255,.55);--sh:0 10px 34px rgba(20,60,40,.13);--b1:#c8f169;--b2:#7fd6c2;--b3:#c3b5ff;--g1a:#1f7a4d;--g1b:#2fb38a;--g2a:#d9482f;--g2b:#d99a1f;--g3a:#1f8f86;--g3b:#6fa81f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="dark"]{--bg:#08120d;--ink:#e9f4ec;--mu:#9bb0a2;--ac:#6fd49a;--bt:#07200f;--co:#ff8a73;--gl:rgba(34,52,42,.5);--gb:rgba(255,255,255,.14);--fi:rgba(255,255,255,.08);--sh:0 10px 34px rgba(0,0,0,.45);--b1:#2f5d1f;--b2:#10514a;--b3:#3b2f7a;--g1a:#6fd49a;--g1b:#b9ec5b;--g2a:#ff8a73;--g2b:#f0b84a;--g3a:#7fd6c2;--g3b:#b9ec5b;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,select{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.9}
+.bg i:nth-child(1){width:60vmax;height:60vmax;background:var(--b1);left:-20vmax;top:-18vmax}
+.bg i:nth-child(2){width:55vmax;height:55vmax;background:var(--b2);right:-22vmax;top:25vh}
+.bg i:nth-child(3){width:50vmax;height:50vmax;background:var(--b3);left:10vmax;bottom:-25vmax}
+/* a different colour wash fades in for each stage (opacity only, cheap) */
+.tint{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.tint i{position:absolute;inset:0;opacity:0;transition:opacity .9s}.tint i.on{opacity:.6}
+:root[data-theme="dark"] .tint i.on{opacity:.3}
+.tint i:nth-child(1){background:radial-gradient(60vmax 50vmax at 15% 10%,rgba(185,236,91,.6),transparent 70%)}
+.tint i:nth-child(2){background:radial-gradient(60vmax 50vmax at 85% 30%,rgba(60,200,160,.55),transparent 70%)}
+.tint i:nth-child(3){background:radial-gradient(60vmax 50vmax at 15% 80%,rgba(229,98,75,.4),transparent 70%),radial-gradient(40vmax 40vmax at 90% 90%,rgba(224,165,58,.4),transparent 70%)}
+.tint i:nth-child(4){background:radial-gradient(60vmax 50vmax at 50% 25%,rgba(185,236,91,.55),transparent 70%),radial-gradient(50vmax 40vmax at 10% 90%,rgba(127,214,194,.5),transparent 70%)}
+.fl{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.fl span{position:absolute;bottom:-50px;font-weight:800;color:var(--ac);opacity:.16;animation:fl linear infinite;will-change:transform}
+@keyframes fl{to{transform:translateY(-115vh) rotate(30deg)}}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@keyframes hop{50%{transform:translateY(5px)}}
+.g{background:var(--gl);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);border:1px solid var(--gb);box-shadow:var(--sh),inset 0 1px 0 var(--gb);border-radius:28px}
+.mu{color:var(--mu)}
+h1,p{margin:0}
+h1,.t{font-size:clamp(38px,7.2vw,78px);line-height:1.04;letter-spacing:-.035em;font-weight:760}
+h1{background:linear-gradient(115deg,var(--ink) 15%,var(--g1a) 62%,var(--g3b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.t{background:linear-gradient(100deg,var(--ga),var(--gb2));-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+.step:nth-child(2){--ga:var(--g1a);--gb2:var(--g1b)}.step:nth-child(3){--ga:var(--g2a);--gb2:var(--g2b)}.step:nth-child(4){--ga:var(--g3a);--gb2:var(--g3b)}
+.lead{font-size:clamp(17px,2.2vw,20px);color:var(--mu);max-width:34ch;margin-top:14px}
+.ey{font-size:13px;font-weight:700;letter-spacing:.16em;color:var(--mu);margin-bottom:12px}
+#pg{position:fixed;z-index:30;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--g1a),var(--g2b),var(--g3b));transform-origin:0 0;transform:scaleX(0)}
+.top{position:fixed;z-index:20;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;transform:translateX(-50%);width:min(1004px,calc(100% - 24px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 8px 7px 10px;border-radius:999px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:720;letter-spacing:-.02em;color:inherit;text-decoration:none}
+.mark{width:34px;height:34px;border-radius:12px;background:var(--ac);color:var(--bt);display:grid;place-items:center;font-weight:800;font-size:19px}
+.ctl{display:flex;gap:7px;align-items:center}
+.pill{border:1px solid var(--gb);background:var(--fi);border-radius:999px;padding:8px 13px;font-size:14px;font-weight:600}
+select.pill{appearance:none;-webkit-appearance:none;max-width:150px}
+.btn{display:inline-flex;justify-content:center;align-items:center;border:0;border-radius:999px;background:var(--ac);color:var(--bt);padding:13px 22px;font-weight:700;text-decoration:none;font-size:16px}
+.btn.alt{background:var(--fi);color:var(--ink);border:1px solid var(--gb)}
+.back{position:fixed;z-index:20;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:50%;transform:translateX(-50%);white-space:nowrap;padding:12px 20px}
+/* story */
+#story{height:400vh;position:relative}
+.stage{position:sticky;top:0;height:100svh;max-width:1040px;margin:auto;padding:84px 18px 96px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:36px}
+.steps{display:grid}
+.step{grid-area:1/1;opacity:0;transform:translateY(26px);transition:opacity .55s,transform .55s;pointer-events:none}
+.step.on{opacity:1;transform:none;pointer-events:auto}
+.step .t{margin-bottom:0}
+.wd{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;max-width:430px}
+.step.on .wd>*{animation:up .6s both}.step.on .wd>:nth-child(2){animation-delay:.1s}.step.on .wd>:nth-child(3){animation-delay:.2s}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--fi);border:1px solid var(--gb);font-size:14px;font-weight:650}
+.hint{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;background:var(--fi);border:1px solid var(--gb);font-size:14px;font-weight:650;color:var(--mu)}.hint b{animation:hop 1.4s ease-in-out infinite}
+.cr{display:grid;grid-template-columns:minmax(96px,auto) 1fr auto;gap:10px;align-items:center;width:100%;font-size:14px;font-weight:600}
+.cr .b{height:9px;border-radius:99px;background:var(--fi);overflow:hidden}.cr .b i{display:block;height:100%;border-radius:99px}
+.dots{display:flex;gap:7px;margin-top:24px}
+.dots button{position:relative;width:8px;height:8px;padding:0;border:0;border-radius:99px;background:var(--mu);opacity:.35;transition:all .4s}
+.dots button::after{content:"";position:absolute;inset:-14px -4px}
+.dots button.on{width:26px;background:var(--ac);opacity:1}
+.ring{position:relative;aspect-ratio:1;width:min(100%,380px,48svh);margin:auto;display:grid;place-items:center;border-radius:50%;padding:12%;transition:box-shadow .8s}
+.ring.s1{box-shadow:var(--sh),inset 0 1px 0 var(--gb),0 0 56px rgba(47,179,138,.32)}
+.ring.s2{box-shadow:var(--sh),inset 0 1px 0 var(--gb),0 0 56px rgba(229,98,75,.3)}
+.ring.s3{box-shadow:var(--sh),inset 0 1px 0 var(--gb),0 0 64px rgba(185,236,91,.5)}
+.ring svg{position:absolute;inset:6%;width:88%;height:88%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+.ring .tr{stroke:var(--fi)}
+.ring .tk{stroke:var(--mu);stroke-width:.8;stroke-dasharray:.4 2.2;stroke-linecap:butt;opacity:.45}
+.ring .ar{stroke-dasharray:100 100;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1),stroke .6s,opacity .3s}
+.ring #rI{stroke:url(#gI);filter:drop-shadow(0 0 3px rgba(47,179,138,.55))}
+.ring #rS{stroke:url(#gS);filter:drop-shadow(0 0 3px rgba(229,98,75,.5))}
+.ring.s3 #rI{stroke:var(--lime)}
+.core{text-align:center;position:relative}
+.core small{display:block;color:var(--mu);font-weight:600;font-size:15px}
+.core #rSub{font-size:13px;font-weight:500;margin-top:2px}
+.num{font-size:clamp(34px,7vw,54px);font-weight:760;letter-spacing:-.035em;font-variant-numeric:tabular-nums;line-height:1.1}
+.num.neg{color:var(--co)}
+.end{max-width:560px;margin:0 auto;padding:34px 24px;text-align:center}.end h2{margin:0 0 6px;font-size:26px;letter-spacing:-.02em}.end .btn{margin:12px 5px 0}
+.endw{padding:0 18px 140px}
+@media(max-width:760px){.stage{grid-template-columns:1fr;align-content:center;gap:16px;padding-top:88px}.ring{order:-1;width:min(100%,290px,34svh)}.brand span{display:none}.ey{margin-bottom:8px}.lead{margin-top:10px}.wd{margin-top:14px}.dots{margin-top:18px}.core small{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}.fl{display:none}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="tint" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+<div class="fl" aria-hidden="true"><span style="left:8%;font-size:26px;animation-duration:26s">₹</span><span style="left:24%;font-size:18px;animation-duration:21s;animation-delay:-9s">₹</span><span style="left:46%;font-size:34px;animation-duration:32s;animation-delay:-18s">₹</span><span style="left:63%;font-size:20px;animation-duration:24s;animation-delay:-5s">₹</span><span style="left:80%;font-size:30px;animation-duration:29s;animation-delay:-14s">₹</span><span style="left:92%;font-size:16px;animation-duration:20s;animation-delay:-2s">₹</span></div>
+<div id="pg" aria-hidden="true"></div>
+<header class="top g">
+  <a class="brand" href="index.html"><div class="mark">₹</div><span>CampusCash</span></a>
+  <div class="ctl"><select class="pill" id="month" aria-label="Choose month"></select><button class="pill" id="theme" aria-label="Switch light or dark theme">🌙</button></div>
+</header>
+<main>
+<div id="story">
+  <div class="stage">
+    <div class="txt">
+      <div class="steps" aria-live="polite">
+        <div class="step on"><p class="ey">01 / 04</p><h1>Know where every rupee goes.</h1><p class="lead">A calm, private money manager for campus life. Scroll and watch your month take shape.</p><div class="wd"><span class="hint">Scroll to begin <b aria-hidden="true">↓</b></span></div></div>
+        <div class="step"><p class="ey">02 / 04</p><p class="t">Money comes in.</p><p class="lead" id="t1"></p><div class="wd" id="w1"></div></div>
+        <div class="step"><p class="ey">03 / 04</p><p class="t">Money goes out.</p><p class="lead" id="t2"></p><div class="wd" id="w2"></div></div>
+        <div class="step"><p class="ey">04 / 04</p><p class="t">What’s left is yours.</p><p class="lead" id="t3"></p><div class="wd" id="w3"></div></div>
+      </div>
+      <div class="dots" id="dots"><button type="button" class="on" data-i="0" aria-label="Go to stage 1"></button><button type="button" data-i="1" aria-label="Go to stage 2"></button><button type="button" data-i="2" aria-label="Go to stage 3"></button><button type="button" data-i="3" aria-label="Go to stage 4"></button></div>
+    </div>
+    <div class="ring g" id="ring" role="img" aria-label="Ring showing money in and money out this month">
+      <svg viewBox="0 0 100 100"><defs><linearGradient id="gI" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fa874"/><stop offset="1" stop-color="#7fd6c2"/></linearGradient><linearGradient id="gS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e5624b"/><stop offset="1" stop-color="#e8a83a"/></linearGradient></defs><circle class="tk" cx="50" cy="50" r="48.6"/><circle class="tr" cx="50" cy="50" r="44"/><circle id="rI" class="ar" cx="50" cy="50" r="44" pathLength="100" style="stroke-dashoffset:100;opacity:0"/><circle id="rS" class="ar" cx="50" cy="50" r="44" pathLength="100" style="stroke-dashoffset:100;opacity:0"/></svg>
+      <div class="core"><small id="rLab">Your month</small><div class="num" id="big">₹0</div><small id="rSub"></small></div>
+    </div>
+  </div>
+</div>
+</main>
+<div class="endw"><div class="end g"><h2>That’s your month.</h2><div><a class="btn" href="index.html#add">Add an entry</a><a class="btn alt" href="index.html">Back to CampusCash</a></div></div></div>
+<a class="btn back g" href="index.html">⌂ Back to CampusCash</a>
+<script>
+(()=>{
+const $=i=>document.getElementById(i),R=document.documentElement;
+const CATS=[["Food","#1f7a4d","🍱"],["Travel","#4f8df0","🚌"],["Books","#e0a53a","📚"],["Programs","#9b7cf0","🎟️"],["Stationery","#ef7f6a","✏️"],["Mobile & Internet","#2fb3a8","📱"],["Other","#8a948d","•"]];
+const SRC={Job:"💼",Family:"🏡",Other:"✨"};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const now=new Date(),today=iso(now),cm=today.slice(0,7);
+const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:n%1?2:0}).format(n||0);
+const sum=a=>a.reduce((s,x)=>s+Number(x.amount||0),0);
+const ml=k=>new Date(+k.slice(0,4),+k.slice(5)-1,1).toLocaleDateString("en-IN",{month:"long",year:"numeric"});
+const ne=a=>a.length+(a.length===1?" entry":" entries");
+const calm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+// Read-only view of the data the main app saves in "cc-v3"
+let S={inc:[],exp:[],bOn:false,bAmt:5000};
+try{const o=JSON.parse(localStorage.getItem("cc-v3"));if(o&&typeof o==="object"){const ok=a=>Array.isArray(a)?a.filter(x=>x&&typeof x.date==="string"):[];S.inc=ok(o.inc);S.exp=ok(o.exp);S.bOn=!!o.bOn;S.bAmt=Number(o.bAmt)>0?Number(o.bAmt):5000}}catch{}
+const h=location.hash.slice(1);
+let month=/^\d{4}-\d{2}$/.test(h)?h:cm,step=-1,shown=0,raf,C,V=[0,0,0,0];
+const inM=l=>l.filter(x=>x.date.slice(0,7)===month);
+const catTotals=l=>CATS.map(c=>({n:c[0],c:c[1],i:c[2],t:sum(l.filter(e=>e.category===c[0]))})).filter(c=>c.t>0).sort((a,b)=>b.t-a.t);
+function calc(){
+  const dim=new Date(+month.slice(0,4),+month.slice(5),0).getDate(),cur=month===cm;
+  const ie=inM(S.inc),ee=inM(S.exp),inc=sum(ie),sp=sum(ee);
+  return{ie,ee,inc,sp,left:inc-sp,cur,rem:cur?dim-now.getDate()+1:0};
+}
+function tween(to){
+  cancelAnimationFrame(raf);const from=shown,t0=performance.now();
+  const f=t=>{const k=calm?1:Math.min(1,(t-t0)/700),e=1-Math.pow(1-k,3);shown=from+(to-from)*e;$("big").textContent=money(Math.round(shown));if(k<1)raf=requestAnimationFrame(f)};
+  raf=requestAnimationFrame(f);
+}
+function paint(){
+  const i=Math.max(step,0),LAB=["Your month","Money in","Money out","Left to spend"],c=C;
+  const SUB=[ml(month),ne(c.ie),ne(c.ee),c.inc>0?"of "+money(c.inc)+" in":""];
+  document.querySelectorAll(".step").forEach((e,k)=>e.classList.toggle("on",k===i));
+  document.querySelectorAll(".tint i").forEach((e,k)=>e.classList.toggle("on",k===i));
+  document.querySelectorAll("#dots button").forEach((e,k)=>e.classList.toggle("on",k===i));
+  $("ring").className="ring g s"+i;$("rLab").textContent=LAB[i];$("rSub").textContent=SUB[i];
+  $("ring").setAttribute("aria-label",`${LAB[i]}: ${money(V[i])}`);
+  const pS=i>=2?(c.inc>0?Math.min(100,c.sp/c.inc*100):(c.sp>0?100:0)):0,pI=i>=1?100:0;
+  [["rI",pI],["rS",pS]].forEach(([id,p])=>{const e=$(id);e.style.strokeDashoffset=100-p;e.style.opacity=p>.3?1:0});
+  $("big").classList.toggle("neg",i===3&&c.left<0);
+  tween(V[i]);
+}
+function render(){
+  C=calc();const c=C,cats=catTotals(c.ee),safe=c.cur&&c.rem>0&&c.left>0?c.left/c.rem:0;
+  V=[0,c.inc,c.sp,c.left];
+  const ms=new Set([cm,month]);S.inc.concat(S.exp).forEach(x=>ms.add(x.date.slice(0,7)));
+  $("month").innerHTML=[...ms].sort().reverse().map(k=>`<option value="${k}"${k===month?" selected":""}>${ml(k)}</option>`).join("");
+  $("t1").textContent=c.inc?`${money(c.inc)} came in during ${ml(month)}.`:`Nothing added for ${ml(month)} yet. Add a job or family income below.`;
+  $("t2").textContent=c.sp?`${money(c.sp)} went out${cats[0]?`, mostly on ${cats[0].n.toLowerCase()}`:""}.`:"No spending logged yet.";
+  $("t3").textContent=(c.left<0?`You’re ${money(-c.left)} over what came in.`:safe?`${money(c.left)} is left, about ${money(Math.floor(safe))} a day for the rest of the month.`:`${money(c.left)} is left for this month.`)+(S.bOn?` Your budget has ${money(S.bAmt-c.sp)} to go.`:"");
+  // extra widgets, built only from the saved entries
+  const so=x=>SRC[x.source]?x.source:"Other";
+  $("w1").innerHTML=Object.keys(SRC).map(s=>[s,sum(c.ie.filter(x=>so(x)===s))]).filter(v=>v[1]>0).map(v=>`<span class="chip">${SRC[v[0]]} ${v[0]} <b>${money(v[1])}</b></span>`).join("");
+  $("w2").innerHTML=cats.slice(0,3).map(x=>`<div class="cr"><span>${x.i} ${esc(x.n)}</span><span class="b"><i style="width:${Math.max(4,x.t/c.sp*100)}%;background:${x.c}"></i></span><b>${money(x.t)}</b></div>`).join("");
+  const bp=S.bAmt>0?c.sp/S.bAmt*100:0;
+  $("w3").innerHTML=(c.inc>0&&c.left>=0?`<span class="chip">🌱 <b>${Math.round(c.left/c.inc*100)}%</b> of what came in is still yours</span>`:"")+(S.bOn?`<div class="cr"><span>🎯 Budget</span><span class="b"><i style="width:${Math.min(100,bp)}%;background:${bp>100?"var(--co)":bp>80?"#e0a53a":"var(--ac)"}"></i></span><b>${money(c.sp)} of ${money(S.bAmt)}</b></div>`:"");
+  if(step>=0)paint();
+}
+function onScroll(){
+  const s=$("story"),hh=s.offsetHeight-innerHeight,p=Math.min(1,Math.max(0,-s.getBoundingClientRect().top/hh)),i=Math.min(3,Math.floor(p*4));
+  $("pg").style.transform=`scaleX(${p})`;
+  if(i!==step){step=i;if(C)paint()}
+}
+$("dots").onclick=e=>{const b=e.target.closest("button");if(!b)return;const s=$("story"),hh=s.offsetHeight-innerHeight;
+  scrollTo({top:scrollY+s.getBoundingClientRect().top+(+b.dataset.i+.5)/4*hh,behavior:calm?"auto":"smooth"})};
+const ti=()=>$("theme").textContent=R.dataset.theme==="dark"?"☀️":"🌙";ti();
+$("theme").onclick=()=>{const n=R.dataset.theme==="dark"?"light":"dark";R.dataset.theme=n;try{localStorage.setItem("cc-theme",n)}catch{}ti()};
+$("month").onchange=e=>{month=e.target.value;render()};
+let tick=false;   // the only scroll work: one throttled handler that picks the stage
+addEventListener("scroll",()=>{if(!tick){tick=true;requestAnimationFrame(()=>{tick=false;onScroll()})}},{passive:true});
+addEventListener("resize",onScroll);
+render();onScroll();
+})();
+</script>
+</body>
+</html>
