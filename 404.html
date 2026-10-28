@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Page not found — CampusCash</title>
+<script>try{var t=localStorage.getItem("cc-theme");if(t!="light"&&t!="dark")t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#e8f2e9;--ink:#10231a;--mu:#55675c;--ac:#1f7a4d;--bt:#fff;--lime:#b9ec5b;--co:#e5624b;--gl:rgba(255,255,255,.5);--gb:rgba(255,255,255,.78);--fi:rgba(255,255,255,.55);--sh:0 10px 34px rgba(20,60,40,.13);--b1:#c8f169;--b2:#7fd6c2;--b3:#c3b5ff;--g1a:#1f7a4d;--g3b:#6fa81f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="dark"]{--bg:#08120d;--ink:#e9f4ec;--mu:#9bb0a2;--ac:#6fd49a;--bt:#07200f;--co:#ff8a73;--gl:rgba(34,52,42,.5);--gb:rgba(255,255,255,.14);--fi:rgba(255,255,255,.08);--sh:0 10px 34px rgba(0,0,0,.45);--b1:#2f5d1f;--b2:#10514a;--b3:#3b2f7a;--g1a:#6fd49a;--g3b:#b9ec5b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--ac);outline-offset:3px}
+h1,p{margin:0}
+.mu{color:var(--mu)}
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.9}
+.bg i:nth-child(1){width:60vmax;height:60vmax;background:var(--b1);left:-20vmax;top:-18vmax}
+.bg i:nth-child(2){width:55vmax;height:55vmax;background:var(--b2);right:-22vmax;top:25vh}
+.bg i:nth-child(3){width:50vmax;height:50vmax;background:var(--b3);left:10vmax;bottom:-25vmax}
+.fl{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.fl span{position:absolute;bottom:-50px;font-weight:800;color:var(--ac);opacity:.16;animation:fl linear infinite;will-change:transform}
+@keyframes fl{to{transform:translateY(-115vh) rotate(30deg)}}
+.g{background:var(--gl);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);border:1px solid var(--gb);box-shadow:var(--sh),inset 0 1px 0 var(--gb);border-radius:28px}
+.top{position:fixed;z-index:20;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;transform:translateX(-50%);width:min(1004px,calc(100% - 24px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 8px 7px 10px;border-radius:999px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:720;letter-spacing:-.02em;color:inherit;text-decoration:none}
+.mark{width:34px;height:34px;border-radius:12px;background:var(--ac);color:var(--bt);display:grid;place-items:center;font-weight:800;font-size:19px}
+.pill{border:1px solid var(--gb);background:var(--fi);border-radius:999px;padding:8px 13px;font-size:14px;font-weight:600}
+.btn{display:inline-flex;justify-content:center;align-items:center;border:0;border-radius:999px;background:var(--ac);color:var(--bt);padding:13px 22px;font-weight:700;text-decoration:none;font-size:16px}
+.btn.alt{background:var(--fi);color:var(--ink);border:1px solid var(--gb)}
+main{min-height:100svh;display:grid;place-items:center;padding:84px 18px 40px}
+.card{width:min(100%,640px);padding:clamp(26px,5vw,46px) clamp(20px,5vw,44px);text-align:center}
+/* the hero: a 4, a bouncing rupee coin, a 4 */
+.big{display:flex;align-items:center;justify-content:center;gap:.03em;font-size:clamp(88px,24vw,176px);font-weight:800;letter-spacing:-.05em;line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums}
+.big .d{background:linear-gradient(115deg,var(--g1a),var(--g3b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.coin{position:relative;width:.8em;height:.8em;padding:0;border:0;border-radius:50%;display:grid;place-items:center;color:#10231a;letter-spacing:0;background:radial-gradient(circle at 32% 26%,#f6ffcf,var(--lime) 42%,#86b92e);box-shadow:0 14px 30px rgba(110,160,30,.42),inset 0 -6px 12px rgba(60,100,10,.25),inset 0 4px 8px rgba(255,255,255,.75);animation:bob 3.2s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.coin::before{content:"";position:absolute;inset:9%;border-radius:50%;border:max(2px,.022em) dashed rgba(16,35,26,.38)}
+.coin b{position:relative;font-size:.48em;font-weight:800}
+.coin:active{filter:brightness(.96)}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-.07em) rotate(5deg)}}
+.coin.flip{animation:flip .85s cubic-bezier(.3,.7,.3,1)}
+@keyframes flip{0%{transform:perspective(700px) rotateY(0) translateY(0)}40%{transform:perspective(700px) rotateY(540deg) translateY(-.22em)}100%{transform:perspective(700px) rotateY(720deg) translateY(0)}}
+.fc{position:fixed;z-index:25;pointer-events:none;font-weight:800;color:var(--ac);animation:pop 1s ease-out forwards}
+@keyframes pop{0%{opacity:1;transform:translate(0,0) scale(.6) rotate(0)}40%{opacity:1;transform:translate(calc(var(--dx)*.6),-90px) scale(1) rotate(var(--r))}100%{opacity:0;transform:translate(var(--dx),70px) scale(1.15) rotate(var(--r))}}
+h1{font-size:clamp(28px,5.2vw,44px);line-height:1.08;letter-spacing:-.03em;font-weight:740;margin-top:10px}
+.lead{font-size:clamp(17px,2.2vw,19px);color:var(--mu);max-width:36ch;margin:12px auto 0}
+.msg{min-height:3em;margin-top:16px;font-weight:650;color:var(--ac)}
+/* the lost-and-found receipt */
+.rc{position:relative;max-width:340px;margin:6px auto 0;padding:16px 18px;border-radius:20px;background:var(--fi);text-align:left}
+.rc::before{content:"";position:absolute;inset:0;border-radius:inherit;border:1.5px dashed var(--mu);opacity:.4;pointer-events:none}
+.rc h2{margin:0 0 6px;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.rc div{display:flex;justify-content:space-between;gap:14px;font-size:14px;padding:3px 0}
+.rc div span{color:var(--mu);flex:none}
+.rc div b{font-weight:650;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rc .tot{margin-top:6px;padding-top:9px;border-top:1px dashed rgba(127,140,132,.5)}
+.rc .tot b{color:var(--ac);font-size:16px}
+.acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px}
+.safe{margin-top:20px;font-size:14px}
+@media(max-width:420px){.acts .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.fl{display:none}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="fl" aria-hidden="true"><span style="left:8%;font-size:26px;animation-duration:26s">₹</span><span style="left:24%;font-size:18px;animation-duration:21s;animation-delay:-9s">₹</span><span style="left:46%;font-size:34px;animation-duration:32s;animation-delay:-18s">₹</span><span style="left:63%;font-size:20px;animation-duration:24s;animation-delay:-5s">₹</span><span style="left:80%;font-size:30px;animation-duration:29s;animation-delay:-14s">₹</span><span style="left:92%;font-size:16px;animation-duration:20s;animation-delay:-2s">₹</span></div>
+
+<header class="top g">
+  <a class="brand" href="index.html"><div class="mark">₹</div><span>CampusCash</span></a>
+  <button class="pill" id="theme" type="button" aria-label="Switch light or dark theme">🌙</button>
+</header>
+
+<main>
+  <div class="card g">
+    <div class="big" role="img" aria-label="Error 404"><span class="d">4</span><button class="coin" id="coin" type="button" aria-label="Flip the coin"><b aria-hidden="true">₹</b></button><span class="d">4</span></div>
+    <h1>This page went over budget.</h1>
+    <p class="lead">The link may be broken, or the page has moved. We checked the couch cushions and found nothing but lint.</p>
+    <p class="msg" id="msg" role="status" aria-live="polite">Tap the coin. It might still have some luck left.</p>
+
+    <div class="rc">
+      <h2>🧾 Lost and found receipt</h2>
+      <div><span>You asked for</span><b id="path">/</b></div>
+      <div><span>Status</span><b>Not found (404)</b></div>
+      <div class="tot"><span>Recovered</span><b id="cnt">₹0</b></div>
+    </div>
+
+    <div class="acts">
+      <a class="btn" href="index.html">⌂ Back to CampusCash</a>
+      <a class="btn alt" href="overview.html">✦ Month overview</a>
+      <a class="btn alt" href="index.html#add">＋ Add an entry</a>
+    </div>
+    <p class="safe mu" id="safe">Your entries live on this device and weren’t touched.</p>
+  </div>
+</main>
+
+<script>
+(()=>{
+const $=i=>document.getElementById(i),R=document.documentElement;
+const calm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:n%1?2:0}).format(n||0);
+// theme: shares the main site's saved choice
+const ti=()=>$("theme").textContent=R.dataset.theme==="dark"?"☀️":"🌙";ti();
+$("theme").onclick=()=>{const n=R.dataset.theme==="dark"?"light":"dark";R.dataset.theme=n;try{localStorage.setItem("cc-theme",n)}catch{}ti()};
+// show what was requested (textContent only, so it can't inject anything)
+let p=location.pathname+location.search;if(p.length>60)p=p.slice(0,57)+"…";$("path").textContent=p||"/";
+// reassure: read-only peek at the saved data, if there is any
+try{
+  const o=JSON.parse(localStorage.getItem("cc-v3")),d=new Date(),k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+  const f=a=>Array.isArray(a)?a.filter(x=>x&&typeof x.date==="string"&&x.date.slice(0,7)===k).reduce((s,x)=>s+(Number(x.amount)||0),0):0;
+  if(o&&((o.inc||[]).length||(o.exp||[]).length)){
+    const left=f(o.inc)-f(o.exp);
+    $("safe").textContent=`💚 Your data is safe. ${left<0?money(-left)+" over":money(left)+" left"} for ${d.toLocaleDateString("en-IN",{month:"long",year:"numeric"})}.`;
+  }
+}catch{}
+// the coin
+const msgs=["Found ₹0 behind the couch. Classic.","Recovered: one bus ticket and half a chai.","This page is on a permanent no-spend challenge.","Plot twist: the page was an impulse buy, and it got returned.","A pen cap, some lint, and ₹10. Not bad.","Even the best budget can’t track down this link."];
+let n=0;const coin=$("coin");
+coin.onclick=()=>{
+  n++;$("cnt").textContent=money(n*5);$("msg").textContent=msgs[(n-1)%msgs.length];
+  coin.classList.remove("flip");void coin.offsetWidth;coin.classList.add("flip");
+  if(calm)return;
+  const r=coin.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+  for(let i=0;i<6;i++){const s=document.createElement("span");s.className="fc";s.textContent="₹";
+    s.style.cssText=`left:${x}px;top:${y}px;font-size:${14+Math.random()*14}px;--dx:${(Math.random()-.5)*240}px;--r:${(Math.random()-.5)*140}deg`;
+    s.onanimationend=()=>s.remove();document.body.append(s)}
+};
+coin.addEventListener("animationend",e=>{if(e.animationName==="flip")coin.classList.remove("flip")});
+})();
+</script>
+</body>
+</html>
