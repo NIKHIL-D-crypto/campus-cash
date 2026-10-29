@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CampusCash — Student money manager</title>
 <script>try{var t=localStorage.getItem("cc-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -133,6 +134,7 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
     <div id="dBud" hidden style="margin-top:14px"><b id="dBudT"></b><div class="bar"><span id="dBar" style="width:0"></span></div></div>
     <div class="acts"><button class="btn" type="button" data-q="exp">Add expense</button><button class="btn alt" type="button" data-q="inc">Add income</button><button class="btn alt" type="button" id="demo" hidden>Load sample data (optional)</button></div>
     <a class="btn ovb" id="ovl2" href="overview.html">✦ See your month overview</a>
+    <a class="btn alt ovb" href="wallet.html">💳 Open card wallet</a>
   </div>
   <div class="card g" style="margin-top:18px"><h3>Recent entries</h3><div id="recent"></div>
     <div class="acts"><button class="btn alt" type="button" data-go="activity">All activity</button><button class="btn alt" type="button" data-go="insights">Analytics</button><a class="btn alt" id="ovl" href="overview.html">Overview story</a></div></div>
@@ -200,7 +202,8 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
       <p class="mu" id="bNote"></p>
       <form id="bForm" style="grid-template-columns:1fr auto;align-items:end"><label>Monthly budget (₹)<input id="bAmt" type="number" min="1" step="1" inputmode="numeric" required></label><button class="btn" type="submit">Update</button></form>
     </div>
-    <div style="margin-top:26px;border-top:1px solid var(--gb);padding-top:20px"><button class="btn warn" id="wipe" type="button">Erase all my data</button><p class="mu" style="font-size:13px;margin-top:8px">Removes every income and expense saved on this device.</p></div>
+    <div style="margin-top:26px;border-top:1px solid var(--gb);padding-top:20px"><h3>Back up your data</h3><p class="mu" style="font-size:14px;margin-top:6px">Your data lives only on this device. Save a copy to keep it safe or move it to a new phone.</p><div class="acts"><button class="btn alt" type="button" id="exJ">Export backup</button><button class="btn alt" type="button" id="exC">Export CSV</button><button class="btn alt" type="button" id="imp">Import backup</button></div><input type="file" id="impF" accept="application/json,.json" hidden></div>
+    <div style="margin-top:26px;border-top:1px solid var(--gb);padding-top:20px"><button class="btn warn" id="wipe" type="button">Erase all my data</button><p class="mu" style="font-size:13px;margin-top:8px">Removes every income, expense and card wallet entry saved on this device.</p></div>
   </div>
 </div></section>
 
@@ -210,6 +213,9 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
     <p>CampusCash is a small money manager made for students. Add what comes in from a job or home, log what you spend, and see what’s left, month by month.</p>
     <p>Everything is saved only in this browser, on this device. There are no accounts, no ads, and nothing is uploaded. This is not a cloud backup: clearing site data or switching devices removes your entries.</p>
     <p>Budgets are optional. Use one if a limit helps you, and ignore it if it doesn’t.</p>
+    <p><b style="color:var(--ink)">Your privacy comes first.</b> We don’t collect your data: no sign-up, no analytics, no trackers, no cookies, no ads. Your entries, budget and card wallet live only in this browser’s storage and are never sent to us or anyone else. The only thing that ever leaves your device is a suggestion you choose to send by email. “Hide” on the card wallet only covers the numbers on screen. For real protection, turn on the PIN lock, which encrypts the wallet on this device. A strict security policy also stops this page from connecting anywhere else.</p>
+    <div class="acts"><span class="pill">🔒 No accounts</span><span class="pill">🚫 No tracking</span><span class="pill">📵 No ads</span><span class="pill">📤 Nothing uploaded</span></div>
+    <p style="font-size:14px">CampusCash <b data-ver></b>. Card wallet money never counts toward Left to spend or your budget.</p>
   </div>
 </div></section>
 
@@ -224,7 +230,7 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
   </div>
 </div></section>
 </main>
-<footer>Made for students. Your data stays on this device.</footer>
+<footer>Made for students. Your data stays on this device.<br>CampusCash <span data-ver></span></footer>
 
 <nav class="dock g" aria-label="Sections">
   <button type="button" data-go="dash" class="on"><b aria-hidden="true">⌂</b>Home</button>
@@ -234,7 +240,7 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
   <button type="button" data-go="budget"><b aria-hidden="true">◎</b>Budget</button>
   <button type="button" data-go="more" aria-haspopup="true"><b aria-hidden="true">⋯</b>More</button>
 </nav>
-<div class="more g" id="more" hidden><button type="button" data-go="insights">Analytics</button><button type="button" data-go="about">About</button><button type="button" data-go="contact">Contact</button></div>
+<div class="more g" id="more" hidden><button type="button" data-href="wallet.html">Card wallet</button><button type="button" data-go="insights">Analytics</button><button type="button" id="mExp">Export backup</button><button type="button" id="mImp">Import backup</button><button type="button" data-go="about">About</button><button type="button" data-go="contact">Contact</button></div>
 <dialog class="g" id="dlg" aria-labelledby="dT"><div id="dB"></div></dialog>
 <div class="toast g" id="toast" role="status"></div>
 
@@ -261,7 +267,11 @@ S.inc=arr(S.inc);S.exp=arr(S.exp);S.bOn=!!S.bOn;S.bAmt=Number(S.bAmt)>0?Number(S
 S.bh=S.bh&&typeof S.bh==="object"?S.bh:{};S.rs=typeof S.rs==="string"?S.rs:"";S.ra=S.ra!==false;
 S.inc.concat(S.exp).forEach(x=>{x.id=String(x.id??uid());x.amount=Number(x.amount)||0;x.name=String(x.name||"");x.date=/^\d{4}-\d{2}-\d{2}/.test(x.date)?String(x.date).slice(0,10):today});
 S.inc.forEach(x=>{if(!SRC[x.source])x.source="Other"});S.exp.forEach(x=>{if(typeof x.category!=="string")x.category="Other"});
-const save=()=>{try{localStorage.setItem("cc-v3",JSON.stringify(S));return true}catch{toast("Couldn’t save to this device. Storage may be full or blocked.",0,1);return false}};
+S.cw=arr(S.cw);S.ch=!!S.ch;S.cw.forEach(x=>{x.id=String(x.id??uid());x.amount=Number(x.amount)||0;x.name=String(x.name||"");x.date=/^\d{4}-\d{2}-\d{2}/.test(x.date)?String(x.date).slice(0,10):today;if(x.k!=="w")x.k="d"});
+if(S.cl&&!(typeof S.cl.s==="string"&&typeof S.cl.i==="string"&&typeof S.cl.d==="string"))delete S.cl;
+let K=null,locked=!!S.cl;if(locked)S.cw=[];
+const ser=()=>JSON.stringify(S.cl?{...S,cw:[]}:S);
+const save=()=>{try{localStorage.setItem("cc-v3",ser());return true}catch{toast("Couldn’t save to this device. Storage may be full or blocked.",0,1);return false}};
 const inM=(l,m=month)=>l.filter(x=>x.date.slice(0,7)===m);
 const toast=(m,a,e)=>{const t=$("toast");t.textContent=m;if(a){const b=document.createElement("button");b.type="button";b.className="tb";b.textContent=a[0];b.onclick=()=>{a[1]();t.classList.remove("on")};t.append(b)}t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),a||e?5500:2400)};
 const pm=k=>iso(new Date(+k.slice(0,4),+k.slice(5)-2,1)).slice(0,7);
@@ -351,6 +361,7 @@ const dm={insights:"more",about:"more",contact:"more"};
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const id=dm[e.target.id]||e.target.id;document.querySelectorAll(".dock button").forEach(b=>b.classList.toggle("on",b.dataset.go===id))}}),{rootMargin:"-45% 0px -54% 0px"});
 document.querySelectorAll("main section").forEach(s=>io.observe(s));
 // setup
+const VER="3.3.0";addEventListener("pageshow",e=>{if(e.persisted)location.reload()});document.querySelectorAll("[data-ver]").forEach(e=>e.textContent="v"+VER);
 $("expCat").innerHTML=CATS.map(c=>`<option>${esc(c[0])}</option>`).join("");
 $("incDate").value=$("expDate").value=today;
 const dark=()=>R.dataset.theme?R.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
@@ -365,11 +376,25 @@ $("incForm").onsubmit=e=>{e.preventDefault();const amount=+$("incAmt").value,dat
   S.inc.push({id:uid(),name:$("incName").value.trim()||src+" income",source:src,amount,date});const ok=save();jump(date);e.target.reset();$("incDate").value=today;render();ok&&toast(`Added ${money(amount)} income`)};
 $("expForm").onsubmit=e=>{e.preventDefault();const amount=+$("expAmt").value,date=$("expDate").value,name=$("expName").value.trim();if(!(amount>0)||!date||!name)return;
   S.exp.push({id:uid(),name,amount,category:$("expCat").value,date});const ok=save();jump(date);e.target.reset();$("expDate").value=today;render();ok&&toast(`Added ${money(amount)} expense`)};
+const dl=(n,t,x)=>{const a=document.createElement("a"),u=URL.createObjectURL(new Blob([x],{type:t}));a.href=u;a.download=n;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)};
+$("exJ").onclick=()=>{dl("campuscash-backup-"+today+".json","application/json",JSON.stringify({app:"CampusCash",version:VER,data:JSON.parse(ser())},null,1));toast("Backup file created")};
+const cs=v=>{v=String(v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+$("exC").onclick=()=>{const r=[...S.inc.map(x=>[x.date,"Income",x.name,x.source,x.amount]),...S.exp.map(x=>[x.date,"Expense",x.name,x.category,x.amount]),...(locked?[]:S.cw.map(x=>[x.date,x.k==="d"?"Card deposit":"Card withdrawal",x.name,"Card wallet",x.amount]))].sort((a,b)=>a[0].localeCompare(b[0]));
+  dl("campuscash-"+today+".csv","text/csv","\ufeff"+[["Date","Type","Label","Category or source","Amount (INR)"],...r].map(x=>x.map(cs).join(",")).join("\r\n"));toast(locked?"CSV created without the locked card wallet":"CSV file created")};
+$("imp").onclick=()=>$("impF").click();
+$("mExp").onclick=()=>{$("more").hidden=true;$("exJ").click()};$("mImp").onclick=()=>{$("more").hidden=true;$("impF").click()};
+$("impF").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+  try{if(f.size>5e6)throw 0;let o=JSON.parse(await f.text());if(o&&o.data)o=o.data;
+    if(!o||typeof o!=="object"||Array.isArray(o)||!(Array.isArray(o.inc)||Array.isArray(o.exp)))throw 0;
+    const k={};["inc","exp","bOn","bAmt","bh","rs","ra","cw","ch","cl"].forEach(n=>{if(n in o)k[n]=o[n]});
+    show(`<h3 id="dT">Replace your data?</h3><p class="mu" style="margin-top:8px">This backup has ${(k.inc||[]).length} income and ${(k.exp||[]).length} spending entries. Importing replaces everything saved on this device now. Export a backup first if you want to keep it.</p><p class="mu" id="iE" role="alert"></p><div class="acts"><button class="btn" type="button" id="iOk">Replace my data</button><button class="btn alt" type="button" data-x>Cancel</button></div>`);
+    $("iOk").onclick=()=>{try{localStorage.setItem("cc-v3",JSON.stringify(k));location.reload()}catch{$("iE").textContent="Couldn’t save to this device."}}}
+  catch{toast("That file isn’t a CampusCash backup.",0,1)}};
 $("bOn").onchange=e=>{S.bOn=e.target.checked;save();render()};
 $("bForm").onsubmit=e=>{e.preventDefault();const n=+$("bAmt").value;if(!(n>0))return;S.bAmt=n;S.bh[month]=n;const ok=save();render();ok&&toast("Budget updated")};
 $("wipe").onclick=()=>{const b=$("wipe");
   if(!b.dataset.armed){b.dataset.armed=1;b.textContent="Tap again to erase everything";setTimeout(()=>{delete b.dataset.armed;b.textContent="Erase all my data"},4000);return}
-  S={inc:[],exp:[],bOn:false,bAmt:5000,bh:{},rs:"",ra:S.ra};const ok=save();delete b.dataset.armed;b.textContent="Erase all my data";render();ok&&toast("All data erased")};
+  S={inc:[],exp:[],bOn:false,bAmt:5000,bh:{},rs:"",ra:S.ra,cw:[],ch:S.ch};K=null;locked=false;const ok=save();delete b.dataset.armed;b.textContent="Erase all my data";render();ok&&toast("All data erased")};
 const upd=()=>{const n=$("cName").value.trim(),m=$("cMsg").value.trim();$("send").href="mailto:nikhilgopalakrishnank@gmail.com?subject="+encodeURIComponent("CampusCash suggestion")+"&body="+encodeURIComponent(m+(n?"\n\n— "+n:""))};
 $("cName").oninput=$("cMsg").oninput=upd;
 $("send").onclick=e=>{if(!$("cMsg").value.trim()){e.preventDefault();toast("Write your suggestion first")}};
