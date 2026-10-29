@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CampusCash — Card wallet</title>
+<script>try{var t=localStorage.getItem("cc-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#e8f2e9;--ink:#10231a;--mu:#55675c;--ac:#1f7a4d;--bt:#fff;--lime:#b9ec5b;--co:#e5624b;--gl:rgba(255,255,255,.5);--gb:rgba(255,255,255,.78);--fi:rgba(255,255,255,.55);--sh:0 10px 34px rgba(20,60,40,.13);--b1:#c8f169;--b2:#7fd6c2;--b3:#c3b5ff;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08120d;--ink:#e9f4ec;--mu:#9bb0a2;--ac:#6fd49a;--bt:#07200f;--co:#ff8a73;--gl:rgba(34,52,42,.5);--gb:rgba(255,255,255,.14);--fi:rgba(255,255,255,.08);--sh:0 10px 34px rgba(0,0,0,.45);--b1:#2f5d1f;--b2:#10514a;--b3:#3b2f7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#08120d;--ink:#e9f4ec;--mu:#9bb0a2;--ac:#6fd49a;--bt:#07200f;--co:#ff8a73;--gl:rgba(34,52,42,.5);--gb:rgba(255,255,255,.14);--fi:rgba(255,255,255,.08);--sh:0 10px 34px rgba(0,0,0,.45);--b1:#2f5d1f;--b2:#10514a;--b3:#3b2f7a;color-scheme:dark}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.9}
+.bg i:nth-child(1){width:60vmax;height:60vmax;background:var(--b1);left:-20vmax;top:-18vmax}
+.bg i:nth-child(2){width:55vmax;height:55vmax;background:var(--b2);right:-22vmax;top:25vh}
+.bg i:nth-child(3){width:50vmax;height:50vmax;background:var(--b3);left:10vmax;bottom:-25vmax}
+.g{background:var(--gl);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);border:1px solid var(--gb);box-shadow:var(--sh),inset 0 1px 0 var(--gb);border-radius:28px}
+.mu{color:var(--mu)}
+.w{max-width:1040px;margin:auto;padding:0 18px}
+h1,h2,h3,p{margin:0}
+h1,.t{font-size:clamp(40px,7.2vw,78px);line-height:1.02;letter-spacing:-.035em;font-weight:750}
+h2{font-size:clamp(28px,4.6vw,46px);line-height:1.08;letter-spacing:-.03em;font-weight:720}
+h3{font-size:19px;letter-spacing:-.015em;font-weight:680}
+.lead{font-size:clamp(17px,2.2vw,20px);color:var(--mu);max-width:34ch;margin-top:14px}
+/* top bar + dock */
+.top{position:fixed;z-index:20;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;transform:translateX(-50%);width:min(1004px,calc(100% - 24px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 8px 7px 10px;border-radius:999px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:720;letter-spacing:-.02em}
+.mark{width:34px;height:34px;border-radius:12px;background:var(--ac);color:var(--bt);display:grid;place-items:center;font-weight:800;font-size:19px}
+.ctl{display:flex;gap:7px;align-items:center}
+.pill{border:1px solid var(--gb);background:var(--fi);border-radius:999px;padding:8px 13px;font-size:14px;font-weight:600}
+select.pill{appearance:none;-webkit-appearance:none;padding-right:13px;max-width:150px}
+.dock{position:fixed;z-index:20;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);left:50%;transform:translateX(-50%);display:flex;gap:2px;padding:7px;border-radius:999px}
+.dock button{border:0;background:none;border-radius:999px;padding:6px 10px;display:grid;justify-items:center;gap:1px;font-size:10.5px;font-weight:600;color:var(--mu);min-width:50px}
+.dock button b{font-size:18px;font-weight:500;line-height:1.1}
+.dock button.on{background:var(--fi);color:var(--ink)}
+.dock .plus{background:var(--lime);color:#10231a;box-shadow:0 4px 14px rgba(120,170,40,.45)}
+.toast{position:fixed;z-index:30;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);transform:translate(-50%,20px);opacity:0;pointer-events:none;padding:11px 18px;border-radius:999px;font-weight:600;font-size:14px;transition:opacity .3s,transform .3s;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.num{font-size:clamp(34px,7vw,54px);font-weight:760;letter-spacing:-.035em;font-variant-numeric:tabular-nums;line-height:1.1}
+.num.neg{color:var(--co)}
+/* sections */
+section.s{padding:96px 0 8px;scroll-margin-top:20px}
+.head{margin-bottom:26px}.head p{margin-top:10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{padding:24px}
+.card h3{margin-bottom:4px}
+form{display:grid;gap:13px;margin-top:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:grid;gap:6px;font-size:13px;font-weight:650;color:var(--mu)}
+input,select,textarea{width:100%;background:var(--fi);border:1px solid var(--gb);border-radius:14px;padding:12px 14px;font-size:16px;color:var(--ink);min-width:0}
+textarea{min-height:120px;resize:vertical}
+option{color:#10231a}
+.seg{display:flex;background:var(--fi);border:1px solid var(--gb);border-radius:14px;padding:3px}
+.seg button{flex:1;border:0;background:none;padding:9px 6px;border-radius:11px;font-weight:600;color:var(--mu);font-size:14px}
+.seg button.on{background:var(--gb);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.btn{display:inline-flex;justify-content:center;align-items:center;border:0;border-radius:999px;background:var(--ac);color:var(--bt);padding:13px 22px;font-weight:700;text-decoration:none;font-size:16px}
+.btn.alt{background:var(--fi);color:var(--ink);border:1px solid var(--gb)}
+.btn.warn{background:transparent;color:var(--co);border:1px solid var(--co)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.stat{padding:18px 20px;border-radius:22px}.stat .num{font-size:clamp(22px,3.4vw,30px);margin-top:4px}
+.donutw{display:flex;align-items:center;gap:22px;margin-top:14px}
+#donut{width:150px;flex:0 0 150px;transform:rotate(-90deg)}
+.leg{display:grid;gap:9px;flex:1;min-width:0;font-size:14px}
+.leg div{display:flex;align-items:center;gap:8px}.leg i{width:10px;height:10px;border-radius:50%;flex:none}.leg span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bars{display:flex;align-items:flex-end;gap:3px;height:150px;margin-top:18px}
+.bars b{flex:1;background:var(--ac);border-radius:6px 6px 2px 2px;min-width:3px;transition:height .6s}.bars b.z{background:var(--fi);}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-top:6px}
+.tx{display:flex;align-items:center;gap:13px;padding:13px 4px;border-bottom:1px solid var(--gb)}
+.tx:last-child{border:0}
+.ic{width:42px;height:42px;border-radius:15px;background:var(--fi);display:grid;place-items:center;font-size:20px;flex:none}
+.tx .n{flex:1;min-width:0}.tx .n b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:650}.tx .n span{font-size:13px;color:var(--mu)}
+.amt{font-weight:720;white-space:nowrap}.amt.p{color:var(--ac)}
+.x{border:0;background:none;color:var(--mu);font-size:22px;padding:4px 8px;border-radius:10px}.x:hover{color:var(--co)}
+.empty{text-align:center;padding:30px 10px;color:var(--mu)}
+.sw{display:flex;align-items:center;gap:14px;cursor:pointer}
+.sw input{position:absolute;opacity:0;width:1px;height:1px}
+.sw .tk{width:52px;height:32px;border-radius:99px;background:var(--fi);border:1px solid var(--gb);position:relative;transition:background .3s;flex:none}
+.sw .tk::after{content:"";position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .3s}
+.sw input:checked+.tk{background:var(--ac)}.sw input:checked+.tk::after{transform:translateX(20px)}
+.sw input:focus-visible+.tk{outline:3px solid var(--ac);outline-offset:2px}
+.sw b{font-size:18px;color:var(--ink);font-weight:680}
+.bar{height:12px;border-radius:99px;background:var(--fi);overflow:hidden;margin:14px 0 10px}.bar span{display:block;height:100%;border-radius:99px;transition:width .6s,background .3s}
+.about p{max-width:60ch;margin-top:14px;font-size:18px;color:var(--mu)}
+.about p:first-of-type{color:var(--ink)}
+footer{padding:70px 0 130px;text-align:center;color:var(--mu);font-size:14px}
+@media(max-width:760px){
+ .two,.stats{grid-template-columns:1fr}
+ .stats{grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:14px 12px}
+ .brand span{display:none}
+ .donutw{flex-direction:column}
+ section.s{padding-top:72px}
+ .dock button{min-width:44px;padding:6px 7px}
+}
+@media(max-width:420px){.stats{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+/* ===== Additions: dashboard, edit/recap dialog, more menu ===== */
+.toast{white-space:normal;max-width:calc(100% - 28px);text-align:center;border-radius:24px}.toast.on{pointer-events:auto}
+.tb{border:0;background:none;color:var(--ac);font-weight:750;margin-left:12px;padding:2px 4px}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.s2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.num{overflow-wrap:anywhere}.x{min-width:38px;min-height:38px}.btn:disabled{opacity:.45}
+.ovb{width:100%;margin-top:12px}
+.srch{display:grid;gap:10px;margin-top:12px}#bSt{margin-left:10px;font-size:14px}
+.more{position:fixed;z-index:21;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);right:12px;display:grid;padding:8px;border-radius:22px;min-width:170px}
+.more button{border:0;background:none;padding:12px 16px;border-radius:14px;text-align:left;font-weight:600}.more button:hover{background:var(--fi)}
+dialog{padding:0;color:var(--ink);width:min(440px,calc(100% - 28px));max-height:88svh;overflow:auto;margin:auto}
+dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-top:12px}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.rg div{padding:12px;border-radius:16px;background:var(--fi);min-width:0}.rg span{display:block;font-size:13px}.rg b{overflow-wrap:anywhere}
+/* ===== Card wallet ===== */
+.cw{position:relative;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;gap:18px;min-height:196px;padding:20px 22px;border-radius:24px;color:#fff;background:linear-gradient(135deg,#0c3524 0%,#1f7a4d 58%,#2fb3a8 100%);box-shadow:0 14px 34px rgba(20,60,40,.3),inset 0 1px 0 rgba(255,255,255,.4)}
+.cw::before{content:"";position:absolute;z-index:-1;width:75%;aspect-ratio:1;right:-25%;top:-45%;border-radius:50%;background:radial-gradient(circle,rgba(185,236,91,.6),transparent 68%)}
+.cw::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:0;width:55%;background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.22) 50%,transparent 80%);transform:translateX(-130%);animation:cws 6s ease-in-out infinite}
+.cw::before{animation:cwg 9s ease-in-out infinite alternate}
+@keyframes cws{0%,55%{transform:translateX(-130%)}100%{transform:translateX(280%)}}
+@keyframes cwg{to{transform:translate(-14%,12%)}}
+@media(prefers-reduced-motion:reduce){.cw::before,.cw::after{animation:none}}
+.cwt,.cwf{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cwt span{font-size:12px;font-weight:750;letter-spacing:.18em}
+.cwe{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:650}
+.cwl{display:block;font-size:13px;opacity:.85;font-weight:600}
+.cwb{font-size:clamp(32px,8vw,46px);font-weight:760;letter-spacing:-.035em;font-variant-numeric:tabular-nums;line-height:1.1;overflow-wrap:anywhere}
+.cwf span{font-size:13px;font-weight:600;opacity:.9}
+.cwc{flex:none;width:40px;height:29px;border-radius:7px;background:linear-gradient(135deg,#f5df93,#c99a2e);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+
+/* ===== Wallet page story ===== */
+a.brand{color:inherit;text-decoration:none}
+.ey{font-size:13px;font-weight:700;letter-spacing:.16em;color:var(--mu);margin-bottom:12px}
+h1{background:linear-gradient(115deg,var(--ink) 15%,var(--ac) 85%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.t{display:block;color:var(--ac)}
+#pg{position:fixed;z-index:30;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ac),var(--lime));transform-origin:0 0;transform:scaleX(0)}
+#story{height:300vh;position:relative}
+.stage{position:sticky;top:0;height:100svh;max-width:1040px;margin:auto;padding:84px 18px 96px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:36px}
+.steps{display:grid}
+.step{grid-area:1/1;opacity:0;transform:translateY(26px);transition:opacity .55s,transform .55s;pointer-events:none}
+.step.on{opacity:1;transform:none;pointer-events:auto}
+.wd{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;max-width:430px}
+.chip,.hint{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:var(--fi);border:1px solid var(--gb);font-size:14px;font-weight:650}
+.hint{color:var(--mu)}.hint b{animation:hop 1.4s ease-in-out infinite}
+@keyframes hop{50%{transform:translateY(5px)}}
+.dots{display:flex;gap:7px;margin-top:24px}
+.dots button{position:relative;width:8px;height:8px;padding:0;border:0;border-radius:99px;background:var(--mu);opacity:.35;transition:all .4s}
+.dots button::after{content:"";position:absolute;inset:-14px -4px}
+.dots button.on{width:26px;background:var(--ac);opacity:1}
+.cwv{width:min(100%,400px);margin:auto}
+.manage{padding-top:30px;padding-bottom:130px}
+.back{position:fixed;z-index:20;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:50%;transform:translateX(-50%);white-space:nowrap;padding:12px 20px}
+@media(max-width:760px){.stage{grid-template-columns:1fr;align-content:center;gap:16px;padding-top:88px}.cwv{order:-1;width:min(100%,340px)}.brand span{display:none}}
+@media(prefers-reduced-motion:reduce){.hint b{animation:none}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<div id="pg" aria-hidden="true"></div>
+<header class="top g"><a class="brand" href="index.html"><div class="mark">₹</div><span>CampusCash</span></a><div class="ctl"><button class="pill" id="theme" aria-label="Switch light or dark theme">🌙</button></div></header>
+<main>
+<div id="story"><div class="stage">
+  <div class="txt">
+    <div class="steps" aria-live="polite">
+      <div class="step on"><p class="ey">01 / 03</p><h1>Savings, kept apart.</h1><p class="lead">Money in your bank account lives here, away from your monthly balance. Scroll to meet your card.</p><div class="wd"><span class="hint">Scroll to begin <b aria-hidden="true">↓</b></span><a class="btn alt" href="#manage">Jump to add money</a></div></div>
+      <div class="step"><p class="ey">02 / 03</p><p class="t">Saved on your card.</p><p class="lead" id="t1"></p><div class="wd" id="w1"></div></div>
+      <div class="step"><p class="ey">03 / 03</p><p class="t">Private by design.</p><p class="lead" id="t2"></p><div class="wd" id="w2"></div></div>
+    </div>
+    <div class="dots" id="dots"><button type="button" class="on" data-i="0" aria-label="Go to stage 1"></button><button type="button" data-i="1" aria-label="Go to stage 2"></button><button type="button" data-i="2" aria-label="Go to stage 3"></button></div>
+  </div>
+  <div class="cwv"><div class="cw" id="cw" role="group"><div class="cwt"><span>CARD WALLET</span><button class="cwe" type="button" id="cwEye" aria-pressed="false">Hide</button></div>
+    <div><span class="cwl">Saved on my card</span><div class="cwb" id="cwBal">₹0</div></div>
+    <div class="cwf"><span>🔒 Not counted in Left to spend</span><i class="cwc" aria-hidden="true"></i></div></div></div>
+</div></div>
+<div class="w manage" id="manage">
+  <div class="two">
+    <div class="card g"><h3>Update card money</h3><p class="mu">Save to your card, or take some out when you need it.</p>
+      <form id="cwForm">
+        <div class="seg" id="cwSeg" role="group" aria-label="Card action"><button type="button" class="on" data-v="d">＋ Add to card</button><button type="button" data-v="w">− Take out</button></div>
+        <label>Note (optional)<input id="cwName" maxlength="60" placeholder="e.g. Scholarship, emergency fund"></label>
+        <div class="row"><label>Amount (₹)<input id="cwAmt" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="5000" required></label><label>Date<input id="cwDate" type="date" required></label></div>
+        <label class="sw" id="cwMvL" hidden><input type="checkbox" id="cwMv"><span class="tk"></span><b style="font-size:15px">Also add it to my spending money</b></label>
+        <button class="btn" type="submit" id="cwSub">Save to card</button>
+      </form></div>
+    <div class="card g"><h3>Card security</h3><p class="mu">Add a PIN to encrypt this wallet on your device. Without it, “Hide” only covers the numbers on screen.</p>
+      <div class="acts"><button class="btn alt" type="button" id="cwLk">🔒 Set PIN lock</button><button class="btn warn" type="button" id="cwRm" hidden>Remove PIN</button></div>
+      <p class="mu" style="font-size:13px;margin-top:14px">The wallet locks itself when you leave this tab. If you forget the PIN it can’t be recovered, so keep a backup.</p></div>
+  </div>
+  <div class="card g" style="margin-top:18px"><h3>Card history</h3><div id="cwList"></div></div>
+</div>
+</main>
+<a class="btn back g" href="index.html">⌂ Back to CampusCash</a>
+<dialog class="g" id="dlg" aria-labelledby="dT"><div id="dB"></div></dialog>
+<div class="toast g" id="toast" role="status"></div>
+<script>
+(()=>{
+const $=i=>document.getElementById(i),R=document.documentElement;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const today=iso(new Date());
+const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:n%1?2:0}).format(n||0);
+const sum=a=>a.reduce((s,x)=>s+Number(x.amount||0),0);
+const uid=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
+const calm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const arr=a=>Array.isArray(a)?a.filter(x=>x&&typeof x==="object"):[];
+const toast=(m,a,e)=>{const t=$("toast");t.textContent=m;if(a){const b=document.createElement("button");b.type="button";b.className="tb";b.textContent=a[0];b.onclick=()=>{a[1]();t.classList.remove("on")};t.append(b)}t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),a||e?5500:2400)};
+
+// The same saved data as the main app ("cc-v3"); this page only changes the wallet and, if asked, adds income
+let S={},bad=false;
+try{const r=localStorage.getItem("cc-v3");if(r)S=JSON.parse(r)}catch{bad=true}
+if(!S||typeof S!=="object"||Array.isArray(S))S={};
+S.inc=arr(S.inc);S.exp=arr(S.exp);S.cw=arr(S.cw);S.ch=!!S.ch;
+S.cw.forEach(x=>{x.id=String(x.id??uid());x.amount=Number(x.amount)||0;x.name=String(x.name||"");x.date=/^\d{4}-\d{2}-\d{2}/.test(x.date)?String(x.date).slice(0,10):today;if(x.k!=="w")x.k="d"});
+if(S.cl&&!(typeof S.cl.s==="string"&&typeof S.cl.i==="string"&&typeof S.cl.d==="string"))delete S.cl;
+let K=null,locked=!!S.cl;if(locked)S.cw=[];
+const ser=()=>JSON.stringify(S.cl?{...S,cw:[]}:S);
+const save=()=>{if(bad){toast("Saved data couldn’t be read, so nothing was changed.",0,1);return false}try{localStorage.setItem("cc-v3",ser());return true}catch{toast("Couldn’t save to this device. Storage may be full or blocked.",0,1);return false}};
+const dlg=$("dlg"),show=h=>{$("dB").innerHTML=h;if(!dlg.open)dlg.showModal()};
+dlg.addEventListener("click",e=>{if(e.target===dlg||e.target.closest("[data-x]"))dlg.close()});
+
+const seg=(id,fn)=>$(id).onclick=e=>{const b=e.target.closest("button");if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle("on",x===b));fn(b.dataset.v)};
+const jump=()=>{};
+const cwBal=()=>sum(S.cw.filter(x=>x.k==="d"))-sum(S.cw.filter(x=>x.k==="w"));
+// PIN lock: AES-GCM key derived from the PIN with PBKDF2; only the encrypted wallet is stored
+const b64=u=>{let t="";u.forEach(c=>t+=String.fromCharCode(c));return btoa(t)},ub64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+const hasCr=()=>!!(window.crypto&&crypto.subtle);
+async function dk(pin,salt){const m=await crypto.subtle.importKey("raw",new TextEncoder().encode(pin),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"},m,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
+async function seal(){const k=K,cw=S.cw,cl=S.cl,iv=crypto.getRandomValues(new Uint8Array(12)),ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,new TextEncoder().encode(JSON.stringify(cw)));cl.i=b64(iv);cl.d=b64(new Uint8Array(ct))}
+const wsave=async()=>{if(S.cl&&K)await seal();return save()};
+function lockNow(){if(!S.cl||locked)return;K=null;S.cw=[];locked=true;wal()}
+function setPin(){
+  if(!hasCr()){toast("PIN lock needs a secure (https) page.",0,1);return}
+  show(`<h3 id="dT">Set a PIN lock</h3><p class="mu" style="margin-top:6px">Your card wallet will be encrypted on this device. If you forget the PIN, the wallet can’t be recovered, so keep a backup.</p><form id="pF"><label>PIN or passphrase (6+ characters)<input name="p" type="password" minlength="6" maxlength="64" autocomplete="new-password" required></label><label>Repeat it<input name="r" type="password" minlength="6" maxlength="64" autocomplete="new-password" required></label><p class="mu" id="pE" role="alert"></p><div class="acts"><button class="btn" type="submit">Turn on lock</button><button class="btn alt" type="button" data-x>Cancel</button></div></form>`);
+  $("pF").onsubmit=async e=>{e.preventDefault();const f=e.target,p=f.p.value;if(p!==f.r.value){$("pE").textContent="The two entries don’t match.";return}
+    $("pE").textContent="Locking…";
+    try{const salt=crypto.getRandomValues(new Uint8Array(16));K=await dk(p,salt);S.cl={s:b64(salt),i:"",d:""};await seal();save();dlg.close();render();toast("Card wallet is now protected by your PIN")}
+    catch{K=null;delete S.cl;$("pE").textContent="Couldn’t turn on the lock in this browser."}}
+}
+function unlock(){
+  if(!hasCr()){toast("Unlocking needs a secure (https) page.",0,1);return}
+  show(`<h3 id="dT">Unlock card wallet</h3><form id="uF"><label>PIN or passphrase<input name="p" type="password" autocomplete="current-password" required></label><p class="mu" id="uE" role="alert"></p><div class="acts"><button class="btn" type="submit">Unlock</button><button class="btn alt" type="button" data-x>Cancel</button></div></form>`);
+  $("uF").onsubmit=async e=>{e.preventDefault();$("uE").textContent="Unlocking…";
+    try{const k=await dk(e.target.p.value,ub64(S.cl.s)),pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:ub64(S.cl.i)},k,ub64(S.cl.d));S.cw=arr(JSON.parse(new TextDecoder().decode(pt)));K=k;locked=false;dlg.close();render()}
+    catch{$("uE").textContent="Wrong PIN or passphrase."}}
+}
+
+async function delW(id){if(locked)return;const i=S.cw.findIndex(x=>x.id===id);if(i<0)return;const[x]=S.cw.splice(i,1),ok=await wsave();render();
+  if(ok)toast("Card entry deleted",["Undo",async()=>{if(locked)return;S.cw.splice(Math.min(i,S.cw.length),0,x);await wsave();render()}])}
+
+let step=-1,shown=0,raf;
+function tween(to){cancelAnimationFrame(raf);const from=shown,t0=performance.now();
+  const f=t=>{const k=calm?1:Math.min(1,(t-t0)/700),e=1-Math.pow(1-k,3);shown=from+(to-from)*e;$("cwBal").textContent=money(k<1?Math.round(shown):to);if(k<1)raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
+function paint(){const i=Math.max(step,0),h=S.ch||locked;
+  document.querySelectorAll(".step").forEach((e,k)=>e.classList.toggle("on",k===i));
+  document.querySelectorAll("#dots button").forEach((e,k)=>e.classList.toggle("on",k===i));
+  if(h){cancelAnimationFrame(raf);$("cwBal").textContent=locked?"🔒 Locked":"₹ ••••••"}else tween(i>=1?cwBal():0)}
+function wal(){
+  const dep=S.cw.filter(x=>x.k==="d"),d=sum(dep),w=sum(S.cw.filter(x=>x.k==="w")),h=S.ch||locked,m=v=>h?"••••":money(v),n=dep.length;
+  $("cwEye").textContent=locked?"Unlock":S.ch?"Show":"Hide";$("cwEye").setAttribute("aria-pressed",!locked&&S.ch);
+  $("cw").setAttribute("aria-label",locked?"Card wallet, locked":h?"Card wallet, balance hidden":"Card wallet, balance "+money(d-w));
+  $("t1").textContent=locked?"Your wallet is locked. Unlock it to see your savings.":S.cw.length?`${m(d-w)} is saved on your card, from ${n} ${n===1?"deposit":"deposits"}.`:"Nothing saved yet. Add your first deposit below.";
+  $("w1").innerHTML=locked||!S.cw.length?"":`<span class="chip">＋ In <b>${m(d)}</b></span><span class="chip">↗ Out <b>${m(w)}</b></span>`;
+  $("t2").textContent=S.cl?(locked?"PIN lock is on and your wallet is locked.":"PIN lock is on. Your wallet is encrypted on this device."):"Add a PIN lock below to encrypt your wallet on this device.";
+  $("w2").innerHTML=`<span class="chip">${S.cl?"🔒 Encrypted":"🔓 Not locked"}</span><span class="chip">📵 Nothing uploaded</span>`;
+  $("cwLk").textContent=!S.cl?"🔒 Set PIN lock":locked?"🔓 Unlock":"🔒 Lock now";$("cwRm").hidden=!S.cl||locked;
+  const a=[...S.cw].sort((u,v)=>v.date.localeCompare(u.date));
+  $("cwList").innerHTML=locked?'<div class="empty">Card wallet is locked. Unlock it to see your history.</div>':a.length?a.map(x=>{const i=x.k==="d",dt=new Date(x.date+"T12:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+    return `<div class="tx"><div class="ic" aria-hidden="true">${i?"💳":"↗️"}</div><div class="n"><b>${esc(x.name||(i?"Added to card":"Taken out"))}</b><span>${dt}</span></div><div class="amt ${i?"p":""}">${i?"+":"−"}${h?"••••":money(x.amount)}</div><button class="x" type="button" data-wd="${esc(x.id)}" aria-label="Delete card entry">×</button></div>`}).join(""):'<div class="empty">No card money yet. Add what you’re saving above.</div>';
+  paint();
+}
+const render=()=>wal();
+document.addEventListener("click",e=>{const b=e.target.closest("[data-wd]");if(b)delW(b.dataset.wd)});
+let wm="d";$("cwDate").value=today;
+seg("cwSeg",v=>{wm=v;$("cwMvL").hidden=v!=="w";$("cwSub").textContent=v==="d"?"Save to card":"Take out"});
+$("cwEye").onclick=()=>{if(locked){unlock();return}S.ch=!S.ch;save();wal()};
+$("cwLk").onclick=()=>{if(!S.cl)setPin();else if(locked)unlock();else lockNow()};
+$("cwRm").onclick=()=>{if(!S.cl||locked)return;delete S.cl;K=null;const ok=save();render();ok&&toast("PIN removed. Card wallet is no longer encrypted.")};
+document.addEventListener("visibilitychange",()=>{if(document.hidden)lockNow()});
+$("cwForm").onsubmit=async e=>{e.preventDefault();if(locked){unlock();return}const amount=+$("cwAmt").value,date=$("cwDate").value,name=$("cwName").value.trim();if(!(amount>0)||!date)return;
+  const bal=cwBal();if(wm==="w"&&amount>bal+1e-9){toast(`Your card only has ${money(Math.max(0,bal))}.`,0,1);return}
+  const mv=wm==="w"&&$("cwMv").checked;S.cw.push({id:uid(),k:wm,amount,name,date});
+  if(mv){S.inc.push({id:uid(),name:name||"From card wallet",source:"Other",amount,date});jump(date)}
+  const ok=await wsave();e.target.reset();$("cwDate").value=today;render();
+  ok&&toast(wm==="d"?`Added ${money(amount)} to your card`:mv?`Took out ${money(amount)} and added it to spending money`:`Took out ${money(amount)}`)};
+
+const dark=()=>R.dataset.theme?R.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+const ti=()=>$("theme").textContent=dark()?"☀️":"🌙";ti();
+$("theme").onclick=()=>{const n=dark()?"light":"dark";R.dataset.theme=n;try{localStorage.setItem("cc-theme",n)}catch{}ti()};
+function onScroll(){const s=$("story"),hh=s.offsetHeight-innerHeight,p=Math.min(1,Math.max(0,-s.getBoundingClientRect().top/hh)),i=Math.min(2,Math.floor(p*3));
+  $("pg").style.transform=`scaleX(${p})`;if(i!==step){step=i;paint()}}
+$("dots").onclick=e=>{const b=e.target.closest("button");if(!b)return;const s=$("story"),hh=s.offsetHeight-innerHeight;
+  scrollTo({top:scrollY+s.getBoundingClientRect().top+(+b.dataset.i+.5)/3*hh,behavior:calm?"auto":"smooth"})};
+let tick=false;addEventListener("scroll",()=>{if(!tick){tick=true;requestAnimationFrame(()=>{tick=false;onScroll()})}},{passive:true});
+addEventListener("resize",onScroll);
+addEventListener("pageshow",e=>{if(e.persisted)location.reload()});
+$("cwDate").value=today;
+wal();onScroll();
+})();
+</script>
+</body>
+</html>
