@@ -114,6 +114,8 @@ footer{padding:70px 0 130px;text-align:center;color:var(--mu);font-size:14px}
 dialog{padding:0;color:var(--ink);width:min(440px,calc(100% - 28px));max-height:88svh;overflow:auto;margin:auto}
 dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-top:12px}
 .rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.rg div{padding:12px;border-radius:16px;background:var(--fi);min-width:0}.rg span{display:block;font-size:13px}.rg b{overflow-wrap:anywhere}
+#cInc,#cExp{scroll-margin-top:100px}
+.cf{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px}.cf .num{margin:0}
 </style>
 </head>
 <body>
@@ -130,7 +132,7 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
     <span class="mu" id="dLab"></span>
     <div class="num" id="dBal">₹0</div>
     <p class="mu" id="dSub"></p>
-    <div class="s2"><div class="stat g"><span class="mu">Money in</span><div class="num" id="dInc"></div></div><div class="stat g"><span class="mu">Money out</span><div class="num" id="dExp"></div></div></div>
+    <div class="s2"><div class="stat g cf" id="dCar" hidden><span class="mu">Carried over<small style="display:block">from earlier months</small></span><div class="num" id="dCarV"></div></div><div class="stat g"><span class="mu">Money in</span><div class="num" id="dInc"></div></div><div class="stat g"><span class="mu">Money out</span><div class="num" id="dExp"></div></div></div>
     <div id="dBud" hidden style="margin-top:14px"><b id="dBudT"></b><div class="bar"><span id="dBar" style="width:0"></span></div></div>
     <div class="acts"><button class="btn" type="button" data-q="exp">Add expense</button><button class="btn alt" type="button" data-q="inc">Add income</button><button class="btn alt" type="button" id="demo" hidden>Load sample data (optional)</button></div>
     <a class="btn ovb" id="ovl2" href="overview.html">✦ See your month overview</a>
@@ -147,7 +149,7 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
   <div class="head"><h2>Add money in, or out.</h2><p class="lead">Income from a job or home sits next to your spending, so the balance is always honest.</p></div>
   <div class="two">
     <div class="card g">
-      <h3>Add income</h3><p class="mu">Pay, allowance, scholarship, gifts.</p>
+      <h3 id="cInc">Add income</h3><p class="mu">Pay, allowance, scholarship, gifts.</p>
       <form id="incForm">
         <div class="seg" id="srcSeg" role="group" aria-label="Income source"><button type="button" class="on" data-v="Job">💼 Job</button><button type="button" data-v="Family">🏡 Family</button><button type="button" data-v="Other">✨ Other</button></div>
         <label>Label (optional)<input id="incName" maxlength="60" placeholder="e.g. Cafe shift, pocket money"></label>
@@ -156,7 +158,7 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
       </form>
     </div>
     <div class="card g">
-      <h3>Add expense</h3><p class="mu">Every small spend counts.</p>
+      <h3 id="cExp">Add expense</h3><p class="mu">Every small spend counts.</p>
       <form id="expForm">
         <label>What did you spend on?<input id="expName" maxlength="70" placeholder="e.g. College lunch, bus ticket" required></label>
         <div class="row"><label>Amount (₹)<input id="expAmt" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="120" required></label><label>Category<select id="expCat"></select></label></div>
@@ -202,6 +204,7 @@ dialog::backdrop{background:rgba(8,18,13,.5)}#dB{padding:24px}#dB form{margin-to
       <p class="mu" id="bNote"></p>
       <form id="bForm" style="grid-template-columns:1fr auto;align-items:end"><label>Monthly budget (₹)<input id="bAmt" type="number" min="1" step="1" inputmode="numeric" required></label><button class="btn" type="submit">Update</button></form>
     </div>
+    <div style="margin-top:26px;border-top:1px solid var(--gb);padding-top:20px"><label class="sw"><input type="checkbox" id="coOn"><span class="tk"></span><b>Carry my balance into each new month</b></label><p class="mu" id="coNote" style="font-size:14px;margin-top:8px"></p></div>
     <div style="margin-top:26px;border-top:1px solid var(--gb);padding-top:20px"><h3>Back up your data</h3><p class="mu" style="font-size:14px;margin-top:6px">Your data lives only on this device. Save a copy to keep it safe or move it to a new phone.</p><div class="acts"><button class="btn alt" type="button" id="exJ">Export backup</button><button class="btn alt" type="button" id="exC">Export CSV</button><button class="btn alt" type="button" id="imp">Import backup</button></div><input type="file" id="impF" accept="application/json,.json" hidden></div>
     <div style="margin-top:26px;border-top:1px solid var(--gb);padding-top:20px"><button class="btn warn" id="wipe" type="button">Erase all my data</button><p class="mu" style="font-size:13px;margin-top:8px">Removes every income, expense and card wallet entry saved on this device.</p></div>
   </div>
@@ -253,7 +256,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 const now=new Date(),today=iso(now);
 const money=n=>new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:n%1?2:0}).format(n||0);
-const sum=a=>a.reduce((s,x)=>s+Number(x.amount||0),0);
+const r2=n=>Math.round((n+Number.EPSILON)*100)/100,sum=a=>r2(a.reduce((s,x)=>s+Number(x.amount||0),0));
 const uid=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random());
 const ago=n=>iso(new Date(now.getFullYear(),now.getMonth(),Math.max(1,now.getDate()-n)));
 const ml=k=>new Date(+k.slice(0,4),+k.slice(5)-1,1).toLocaleDateString("en-IN",{month:"long",year:"numeric"});
@@ -264,7 +267,7 @@ if(!S||typeof S!=="object")S={};
 if(!raw){try{const o=JSON.parse(localStorage.getItem("campuscash-v1"));if(o&&Array.isArray(o.expenses)){S.exp=o.expenses;S.bAmt=Number(o.budget)||5000}}catch{}}
 const arr=a=>Array.isArray(a)?a.filter(x=>x&&typeof x==="object"):[];
 S.inc=arr(S.inc);S.exp=arr(S.exp);S.bOn=!!S.bOn;S.bAmt=Number(S.bAmt)>0?Number(S.bAmt):5000;
-S.bh=S.bh&&typeof S.bh==="object"?S.bh:{};S.rs=typeof S.rs==="string"?S.rs:"";S.ra=S.ra!==false;
+S.bh=S.bh&&typeof S.bh==="object"?S.bh:{};S.rs=typeof S.rs==="string"?S.rs:"";S.ra=S.ra!==false;S.co=S.co!==false;
 S.inc.concat(S.exp).forEach(x=>{x.id=String(x.id??uid());x.amount=Number(x.amount)||0;x.name=String(x.name||"");x.date=/^\d{4}-\d{2}-\d{2}/.test(x.date)?String(x.date).slice(0,10):today});
 S.inc.forEach(x=>{if(!SRC[x.source])x.source="Other"});S.exp.forEach(x=>{if(typeof x.category!=="string")x.category="Other"});
 S.cw=arr(S.cw);S.ch=!!S.ch;S.cw.forEach(x=>{x.id=String(x.id??uid());x.amount=Number(x.amount)||0;x.name=String(x.name||"");x.date=/^\d{4}-\d{2}-\d{2}/.test(x.date)?String(x.date).slice(0,10):today;if(x.k!=="w")x.k="d"});
@@ -280,16 +283,16 @@ const catTotals=l=>CATS.map(c=>({n:c[0],c:c[1],i:c[2],t:sum(l.filter(e=>e.catego
 
 function calc(k=month){
   const dim=new Date(+k.slice(0,4),+k.slice(5),0).getDate(),cur=k===today.slice(0,7),el=cur?now.getDate():dim;
-  const ie=inM(S.inc,k),ee=inM(S.exp,k),inc=sum(ie),sp=sum(ee);
-  return{ie,ee,inc,sp,left:inc-sp,dim,cur,el,avg:el?sp/el:0,rem:cur?dim-now.getDate()+1:0};
+  const ie=inM(S.inc,k),ee=inM(S.exp,k),inc=sum(ie),sp=sum(ee),pv=l=>sum(l.filter(x=>x.date.slice(0,7)<k)),open=S.co?r2(pv(S.inc)-pv(S.exp)):0,prior=S.inc.concat(S.exp).filter(x=>x.date.slice(0,7)<k).length;
+  return{ie,ee,inc,sp,left:r2(inc-sp),open,prior,bal:r2(open+inc-sp),dim,cur,el,avg:el?sp/el:0,rem:cur?dim-now.getDate()+1:0};
 }
 function render(){
-  C=calc();const c=C,cats=catTotals(c.ee),safe=c.cur&&c.rem>0&&c.left>0?c.left/c.rem:0;
+  C=calc();const c=C,cats=catTotals(c.ee),safe=c.cur&&c.rem>0&&c.bal>0?c.bal/c.rem:0;
   $("month").innerHTML=months().map(k=>`<option value="${k}"${k===month?" selected":""}>${ml(k)}</option>`).join("");
-  const n=c.ie.length+c.ee.length,bud=S.bAmt-c.sp,msg=(c.left<0?`You’re ${money(-c.left)} over what came in.`:safe?`${money(c.left)} is left, about ${money(Math.floor(safe))} a day for the rest of the month.`:`${money(c.left)} is left for this month.`)+(S.bOn?(bud<0?` You’re ${money(-bud)} over budget.`:` Your budget has ${money(bud)} to go.`):"");
-  $("dLab").textContent=`Left to spend, ${ml(month)}`;$("dBal").textContent=money(c.left);$("dBal").classList.toggle("neg",c.left<0);
-  $("dSub").textContent=n?msg:`Nothing added for ${ml(month)} yet. Add a job or family income below.`;
-  $("dInc").textContent=money(c.inc);$("dExp").textContent=money(c.sp);
+  const n=c.ie.length+c.ee.length,bud=S.bAmt-c.sp,msg=(c.bal<0?`You’re ${money(-c.bal)} over ${c.open?"what you had":"what came in"}.`:safe?`${money(c.bal)} is left, about ${money(Math.floor(safe))} a day for the rest of the month.`:`${money(c.bal)} is left for this month.`)+(S.bOn?(bud<0?` You’re ${money(-bud)} over budget.`:` Your budget has ${money(bud)} to go.`):"");
+  $("dLab").textContent=`Left to spend, ${ml(month)}`;$("dBal").textContent=money(c.bal);$("dBal").classList.toggle("neg",c.bal<0);
+  $("dSub").textContent=n||c.open?msg:`Nothing added for ${ml(month)} yet. Add a job or family income below.`;
+  $("dCar").hidden=!(S.co&&c.prior);$("dCarV").textContent=money(c.open);$("dCarV").classList.toggle("neg",c.open<0);$("dInc").textContent=money(c.inc);$("dExp").textContent=money(c.sp);
   $("demo").hidden=S.inc.length+S.exp.length>0;$("ovl").href=$("ovl2").href="overview.html#"+month;
   const rc=[...c.ie.map(x=>({...x,k:"i"})),...c.ee.map(x=>({...x,k:"e"}))].sort((u,v)=>v.date.localeCompare(u.date)).slice(0,4);
   $("recent").innerHTML=rc.length?rc.map(x=>row(x)).join(""):'<div class="empty">Nothing here yet. Add income or an expense.</div>';
@@ -306,7 +309,7 @@ function render(){
   $("endDay").textContent="Day "+L;const pk=days.indexOf(Math.max(...days));$("bars").setAttribute("aria-label",c.sp>0&&days[pk]>0?`Daily spending. Highest day is day ${pk+1} at ${money(days[pk])}.`:"No spending logged this month.");
   list();
   // budget
-  $("bOn").checked=S.bOn;$("bBody").hidden=!S.bOn;$("bOff").hidden=S.bOn;$("dBud").hidden=!S.bOn;
+  $("coOn").checked=S.co;$("coNote").textContent=S.co?"What’s left at the end of a month rolls into the next one, so your balance never resets. Budgets still start fresh each month.":"Each month starts from zero. Money left over is not added to the next month.";$("bOn").checked=S.bOn;$("bBody").hidden=!S.bOn;$("bOff").hidden=S.bOn;$("dBud").hidden=!S.bOn;
   if(S.bOn){
     const left=S.bAmt-c.sp,pct=S.bAmt>0?c.sp/S.bAmt*100:(c.sp?100:0);
     const bt=`${money(c.sp)} of ${money(S.bAmt)} spent`,bs=pct>100?"Over budget":pct>80?"Close to the limit":"On track";
@@ -341,19 +344,20 @@ function recap(m){
   let h=`<h3 id="dT">${r.cur?"So far in "+ml(m):"Your "+ml(m)+" recap"}</h3>`;
   if(!n)h+='<p class="mu" style="margin-top:10px">Nothing was logged for this month.</p>';
   else{const d=Math.abs(r.sp-p.sp),cmp=p.sp>0?`Spending ${r.sp>=p.sp?"rose":"fell"} by ${money(d)} (${Math.round(d/p.sp*100)}%) compared with ${ml(pm(m))}.`:`No spending was logged in ${ml(pm(m))}, so there’s nothing to compare with.`;
-    h+=`<div class="rg">${kv("Money in",money(r.inc))}${kv("Money out",money(r.sp))}${kv(r.left<0?"Deficit":"Surplus",money(Math.abs(r.left)))}${kv("Entries",`${r.ie.length} income, ${r.ee.length} spending`)}${kv(r.cur?"Daily average so far":"Daily average",money(Math.round(r.avg)))}${top?kv("Top category",`${esc(top.n)}, ${money(top.t)}`):""}${big?kv("Largest expense",`${esc(big.name)}, ${money(big.amount)}`):""}${S.bh[m]?kv("Budget",`${money(r.sp)} of ${money(S.bh[m])}`):""}</div><p class="mu">${cmp}${top?` ${esc(top.n)} made up ${Math.round(top.t/r.sp*100)}% of your spending.`:""}</p>`}
+    h+=`<div class="rg">${kv("Money in",money(r.inc))}${kv("Money out",money(r.sp))}${kv(r.left<0?"Deficit":"Surplus",money(Math.abs(r.left)))}${S.co&&r.prior?kv("Carried in",money(r.open))+kv(r.cur?"Left to spend now":"Left at month end",money(r.bal)):""}${kv("Entries",`${r.ie.length} income, ${r.ee.length} spending`)}${kv(r.cur?"Daily average so far":"Daily average",money(Math.round(r.avg)))}${top?kv("Top category",`${esc(top.n)}, ${money(top.t)}`):""}${big?kv("Largest expense",`${esc(big.name)}, ${money(big.amount)}`):""}${S.bh[m]?kv("Budget",`${money(r.sp)} of ${money(S.bh[m])}`):""}</div><p class="mu">${cmp}${top?` ${esc(top.n)} made up ${Math.round(top.t/r.sp*100)}% of your spending.`:""}</p>`}
   show(h+`<div class="acts">${m!==month?`<button class="btn" type="button" data-m="${m}">View this month</button>`:""}<button class="btn alt" type="button" data-x autofocus>Close</button></div>`);
 }
 // Shows the latest completed month that has entries, once; never a partial current month.
 function autoRecap(){if(!S.ra||dlg.open)return;const m=months().find(k=>k<today.slice(0,7));if(m&&S.rs<m){S.rs=m;save();recap(m)}}
-const go=(id,f)=>{$(id).scrollIntoView({behavior:calm?"auto":"smooth",block:"start"});if(f)setTimeout(()=>$(f).focus({preventScroll:true}),calm?0:450)};
+const settle=fn=>{if(calm)return fn();let y=-1,n=0;const t0=performance.now(),tick=()=>{scrollY===y?n++:(n=0,y=scrollY);n>5||performance.now()-t0>1500?fn():requestAnimationFrame(tick)};requestAnimationFrame(tick)};
+const go=(id,f)=>{$(id).scrollIntoView({behavior:calm?"auto":"smooth",block:"start"});if(f)settle(()=>$(f).focus({preventScroll:true}))};
 document.addEventListener("click",e=>{
   if(!e.target.closest("#more,[data-go=more]"))$("more").hidden=true;
   const b=e.target.closest("[data-go],[data-q],[data-a],[data-m],[data-href]");if(!b)return;const d=b.dataset;
   if(d.go==="more"){$("more").hidden=!$("more").hidden;return}
   if(d.href)location.href=d.href+"#"+month;
   else if(d.go){$("more").hidden=true;go(d.go)}
-  else if(d.q)go("add",d.q==="exp"?"expName":"incAmt");
+  else if(d.q){const x=d.q==="exp";go(matchMedia("(max-width:760px)").matches?(x?"cExp":"cInc"):"add",x?"expName":"incAmt")}
   else if(d.a)d.a==="ed"?edit(d.k,d.id):del(d.k,d.id);
   else if(d.m){month=d.m;dlg.close();render();go("dash")}
 });
@@ -361,7 +365,7 @@ const dm={insights:"more",about:"more",contact:"more"};
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const id=dm[e.target.id]||e.target.id;document.querySelectorAll(".dock button").forEach(b=>b.classList.toggle("on",b.dataset.go===id))}}),{rootMargin:"-45% 0px -54% 0px"});
 document.querySelectorAll("main section").forEach(s=>io.observe(s));
 // setup
-const VER="3.3.0";addEventListener("pageshow",e=>{if(e.persisted)location.reload()});document.querySelectorAll("[data-ver]").forEach(e=>e.textContent="v"+VER);
+const VER="3.4.1";addEventListener("pageshow",e=>{if(e.persisted)location.reload()});document.querySelectorAll("[data-ver]").forEach(e=>e.textContent="v"+VER);
 $("expCat").innerHTML=CATS.map(c=>`<option>${esc(c[0])}</option>`).join("");
 $("incDate").value=$("expDate").value=today;
 const dark=()=>R.dataset.theme?R.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
@@ -386,15 +390,15 @@ $("mExp").onclick=()=>{$("more").hidden=true;$("exJ").click()};$("mImp").onclick
 $("impF").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
   try{if(f.size>5e6)throw 0;let o=JSON.parse(await f.text());if(o&&o.data)o=o.data;
     if(!o||typeof o!=="object"||Array.isArray(o)||!(Array.isArray(o.inc)||Array.isArray(o.exp)))throw 0;
-    const k={};["inc","exp","bOn","bAmt","bh","rs","ra","cw","ch","cl"].forEach(n=>{if(n in o)k[n]=o[n]});
+    const k={};["inc","exp","bOn","bAmt","bh","rs","ra","cw","ch","cl","co"].forEach(n=>{if(n in o)k[n]=o[n]});
     show(`<h3 id="dT">Replace your data?</h3><p class="mu" style="margin-top:8px">This backup has ${(k.inc||[]).length} income and ${(k.exp||[]).length} spending entries. Importing replaces everything saved on this device now. Export a backup first if you want to keep it.</p><p class="mu" id="iE" role="alert"></p><div class="acts"><button class="btn" type="button" id="iOk">Replace my data</button><button class="btn alt" type="button" data-x>Cancel</button></div>`);
     $("iOk").onclick=()=>{try{localStorage.setItem("cc-v3",JSON.stringify(k));location.reload()}catch{$("iE").textContent="Couldn’t save to this device."}}}
   catch{toast("That file isn’t a CampusCash backup.",0,1)}};
-$("bOn").onchange=e=>{S.bOn=e.target.checked;save();render()};
+$("bOn").onchange=e=>{S.bOn=e.target.checked;save();render()};$("coOn").onchange=e=>{S.co=e.target.checked;save();render()};
 $("bForm").onsubmit=e=>{e.preventDefault();const n=+$("bAmt").value;if(!(n>0))return;S.bAmt=n;S.bh[month]=n;const ok=save();render();ok&&toast("Budget updated")};
 $("wipe").onclick=()=>{const b=$("wipe");
   if(!b.dataset.armed){b.dataset.armed=1;b.textContent="Tap again to erase everything";setTimeout(()=>{delete b.dataset.armed;b.textContent="Erase all my data"},4000);return}
-  S={inc:[],exp:[],bOn:false,bAmt:5000,bh:{},rs:"",ra:S.ra,cw:[],ch:S.ch};K=null;locked=false;const ok=save();delete b.dataset.armed;b.textContent="Erase all my data";render();ok&&toast("All data erased")};
+  S={inc:[],exp:[],bOn:false,bAmt:5000,bh:{},rs:"",ra:S.ra,co:S.co,cw:[],ch:S.ch};K=null;locked=false;const ok=save();delete b.dataset.armed;b.textContent="Erase all my data";render();ok&&toast("All data erased")};
 const upd=()=>{const n=$("cName").value.trim(),m=$("cMsg").value.trim();$("send").href="mailto:nikhilgopalakrishnank@gmail.com?subject="+encodeURIComponent("CampusCash suggestion")+"&body="+encodeURIComponent(m+(n?"\n\n— "+n:""))};
 $("cName").oninput=$("cMsg").oninput=upd;
 $("send").onclick=e=>{if(!$("cMsg").value.trim()){e.preventDefault();toast("Write your suggestion first")}};
